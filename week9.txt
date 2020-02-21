@@ -1,0 +1,197 @@
+1.คำสั่งการสร้าง Branch
+    git branch <ชื่อ branch ที่ต้องการตั้ง>
+    การสร้าง Branch ที่แยกออกมาจาก Branch เดิมนั้นเป็นการแยกส่วนที่พัฒนาไม่ให้ปนกัน
+โดย Branch หลักของ repository คือ master 
+
+*************************************************************************
+
+2.คำสั่งที่ตรวจสอบว่ามี Branch ใดบ้าง
+    git branch
+    โดยหลังจากใช้คำสั่งดังกล่าวจะปรากฏรายชื่อ Branch ทั้งหมดและจะมี * อยู่หน้าชื่อ Branch
+ที่เรากำลังเข้าถึงอยู่
+
+*************************************************************************
+
+3.คำสั่งการเปลี่ยน Branch นึงไปอีก Branch นึง
+    git checkout ชือBranchที่จะเข้าถึง
+
+*************************************************************************
+
+การ Merge Branch แบบไม่มี Conflict
+
+1.เพิ่มไฟล์ n.txt ใน branch new และเพิ่มไฟล์ m.txt ใน branch master
+ใช้คำสั่ง  
+         git checkout new --->  เพื่อเข้าถึง branch new และเพิ่มไฟล์ n.txt
+         git status  --->  เพื่อดูว่าตอนนี้เราอยู่ที่ branch ไหน
+         git add n.txt  --->  เพื่อเพิ่มไฟล์เข้า staging area
+         git commit -m "n.txt in branch new " --->  เพื่อเก็บ checkpoint ของไฟล์
+
+         git checkout master --->  เพื่อเปลี่ยนมาเข้าถึง branch master แล้วเพิ่มไฟล์ m.txt
+         git status
+         git add m.txt
+         git commit -m "m.txt in branch master"
+
+*************************************************************************
+
+2.ใช้คำสั่ง git log adog ดู Checkpoint ทั้งหมด
+    git log --all --decorate --oneline --graph
+จะปรากฏ Branch 2 อัน คือ master และ new และ origin/master ยังอยู่ที่เดิม
+         
+*************************************************************************
+
+3.push master ขึ้น github ใช้ git log adog ดู checkpoint ทั้งหมด แล้วสังเกตสิ่งที่เปลี่ยนแปลง
+    git checkout master
+	git log --all --decorate --oneline --graph
+	git push origin master
+    git log --all --decorate --oneline --graph
+
+*************************************************************************
+
+4.push new ขึ้น github ใช้ git adog ดู checkpoint ทั้งหมด แล้วสังเกตสิ่งที่เปลี่ยนแปลง
+    git checkout feature
+	git log --all --decorate --oneline --graph
+	git push origin feature
+ 	git log --all --decorate --oneline --graph
+
+*************************************************************************
+
+5.ลอง merge โดยให้ งานใน new ไปรวมกันใน master
+เปลี่ยนไปที่ Branch ปลายทางก่อน (master)
+    git checkpoint master
+รวม Branch new ให้ไปอยู่ใน master
+    git merge new
+
+*************************************************************************
+
+6.ถ้าไม่มี conflict จะทำให้ git สร้าง commit ของการ merge นั้นเลย ดังนั้น 
+เราจะต้องใส่ commit message ด้วย vi  default merge commit message 
+ให้กด ESC แล้วพิมพ์ :wq! แล้วกด Enter
+
+*************************************************************************
+
+7.เมื่อ merge แล้ว จะเห็นว่ามีทั้งไฟล์ m.txt และ n.txt อยู่ใน Branch master
+
+*************************************************************************
+
+8.push master ขึ้น github ถือว่าเป็นการ merge เสร็จสิ้น
+    git push origin master
+
+*************************************************************************
+
+การ Pull แบบไม่มี Conflict
+
+1.ให้ clone git repository มาไว้อีกเครื่องหนึ่ง หรือ directory ใหม่ เช่น git102
+    cd..
+    git clone <git-url> git102
+    cd git102
+
+2.เพิ่มไฟล์ cs1.txt ใส่ใน directory ใหม่(git102) แล้ว push ไปที่ github
+    git add cs1.txt 
+    git commit -m "add cs1.txt by user2 "
+    git push origin master
+
+3.มาดูที่เครื่องเก่า หรือ directory เก่า แล้ว pull การเปลี่ยนเแปลงมาที่ local repository
+    cd .. 
+    cd git101
+    ls -l  ---> จะไม่มีไฟล์ cs1.txt
+    git pull origin master  ---> ดึงการเปลี่ยนแแปลงมาจาก branch master
+    ls -l  ---> มีไฟล์ cs1.txt
+
+*************************************************************************
+
+การ Merge แบบมี Conflict
+    Conflict คือความขัดแย้ง เกิดจากการปรับแก้ไขข้อมูลในไฟล์เดิม บรรดทัดเดียวกัน แต่คนละ Branch กัน
+
+1.สร้าง Branch new และสลับไป Branch นั้นได้เลยด้วยคำสั่ง
+    git checkout -b new
+
+2.ลองแก้ไฟล์ n2.txt ใน branch new และ master ในบรรทัดกันให้มีลักษณะต่างกัน
+    git checkout new ---> แก้ไฟล์ n2.txt ในข้อความบรรทัดแรก
+    git status
+    git add n2.txt
+    git commit -m "update n2.txt"
+    git log --all --decorate --oneline --graph
+
+     git checkout master ---> แก้ไฟล์ n2.txt ในข้อความบรรทัดแรก แต่มีลักษณะต่างจากข้อความที่หนึ่ง
+	 git status
+	 git add n2.txt
+	 git commit -m "update n2.txt"
+	 git log --all --decorate --oneline --graph
+
+3.merge branch new เข้าไปใน branch master (ไม่ push ก็ merge ได้)
+    git checkout master
+    git merge new
+    *การ merge ไม่สำเร็จ จะมีข้อความเกิด conflict ขึ้น
+
+4.เปิดไฟล์ n.txt ใน master จะเห็นว่า git สร้างข้อควาอธิบาย conflict
+    ถ้าหาก Editor มี tool ที่ช่วยจัดการ conflict เช่น Atom สามารถเลือกว่าจะใช้ข้อมูลจาก branch ไหน
+    ถ้าหาก Editor ไม่มี tool ช่วยในการจัดการ เช่น sublime ต้อง เพิ่ม,แก้,ลบ เอง
+
+5.หลังจากแก้ไข conflict เสร็จแล้วให้ commit การ merge นั้นเลย
+    git add n2.txt
+    git status
+    git commit -m "merge branch 'n'"
+    git log --all --decorate --oneline --graph
+
+6.push ขึ้น github
+    git push origin master
+    git log --all --decorate --oneline --graph
+    *เราไม่จำเป็นต้อง push new เพราะถูก merge กับ master แล้ว
+
+*************************************************************************
+
+การ Pull แบบมี Conflict
+
+1.ในเครื่องใหม่ หรือ directory ใหม่ให้แก้ไขข้อมูลใน n1.txt แล้ว commit และ push ไปที่ github
+    cd ..
+    cd git102
+    git pull origin master  ---> แก้ไฟล์  n1.txt ใน git102
+    git status
+    git add n1.txt
+    git status
+    git commit -m "update n1.txt by user2"
+    git log --all --decorate --oneline --graph
+    git push origin master
+    git log --all --decorate --oneline --graph
+
+2.ในเครื่องเก่า หรือ directory เก่าให้แก้ไขข้อมูลใน n1.txt บรรทัดเดียวกับข้อที่แล้ว แล้ว commit
+    cd ..
+    cd git101  ---> แก้ไฟล์ n1.txt บรรทัดดียวกัน แต่ให้มีข้อความใหม่
+    git status
+    git add n1.txt
+    git status
+    git commit -m "update n1.txt too"
+    git log --all --decorate --oneline --graph
+
+3. ก่อน Push ให้ Pull origin/master จะพบว่าการ Pull นี้ มี conflict เกิดขึ้น
+ดังนั้นให้แก้ไข conflict ในไฟล์ n1.txt จากนั้นสร้าง commit แล้ว push ไปที่ github
+    git pull origin master
+    git status  ---> แก้ไข commit ในไฟล์ n1.txt
+    git add n1.txt
+    git status
+    git commit -m "merge n1.txt"
+    git log --all --decorate --oneline --graph
+    git push origin master
+    git log --all --decorate --oneline --graph
+
+4. ที่เครื่องใหม่ หรือ directory ใหม่ จะเห็นว่า Checkpoint จะตามหลัง origin/master
+    cd ..
+	cd git102
+	git log --all --decorate --oneline --graph
+    
+    การ pull ครั้งนี้จะไม่เกิด conflict เพราะไม่มีการแก้ไขอะไรเพิ่มเติม
+	git pull origin master
+    git log --all --decorate --oneline --graph
+
+*************************************************************************
+
+
+
+
+
+    
+
+
+    
+
+
